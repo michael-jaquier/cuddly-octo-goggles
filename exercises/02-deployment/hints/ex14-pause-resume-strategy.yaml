@@ -1,0 +1,19 @@
+# Command sequence to pause, patch, and resume
+
+# 1. Pause the deployment
+# kubectl rollout pause deploy/api
+
+# 2. Patch the strategy
+# kubectl patch deploy api -p '{"spec":{"strategy":{"rollingUpdate":{"maxSurge":2,"maxUnavailable":0}}}}'
+
+# 3. Make other changes if needed (e.g., add env var)
+# kubectl set env deploy/api VERSION=2.0
+
+# 4. Resume the deployment
+# kubectl rollout resume deploy/api
+
+# 5. Watch the rollout
+# kubectl rollout status deploy/api
+
+# 6. Check ReplicaSets
+# kubectl get rs -l app=api -o wide

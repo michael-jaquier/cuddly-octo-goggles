@@ -1,0 +1,37 @@
+# ConfigMap (create after pod to see Init behavior)
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: app-config
+# data:
+#   ready: "true"
+---
+# Pod with initContainer
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-with-init
+spec:
+  initContainers:
+  - name: # TODO: init container name
+    image: busybox:1.36
+    command:
+    - sh
+    - -c
+    - |
+      # TODO: Wait for ConfigMap to exist
+      # Simple approach: sleep 30
+      # Better approach: until nslookup app-config; do sleep 2; done
+      # For CKAD: just use sleep or a simple check
+      echo "Waiting for prerequisites..."
+      sleep 30
+  containers:
+  - name: nginx
+    image: nginx:1.27
+    ports:
+    - containerPort: 80
+
+# Exercise flow:
+# 1. Apply pod first (will stay in Init state)
+# 2. Create ConfigMap
+# 3. Pod transitions to Running (if using proper wait logic)

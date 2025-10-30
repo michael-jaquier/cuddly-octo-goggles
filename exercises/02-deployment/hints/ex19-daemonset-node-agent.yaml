@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: # TODO: daemonset name
+spec:
+  selector:
+    matchLabels:
+      # TODO: selector labels
+  template:
+    metadata:
+      labels:
+        # TODO: pod labels
+    spec:
+      containers:
+      - name: busybox
+        image: # TODO: busybox:1.36
+        command: # TODO: ["sh", "-c", "sleep 3600"]
+        # Or: command: ["sh", "-c", "tail -f /var/log/containers/*.log || sleep 3600"]
+        volumeMounts:
+        - name: # TODO: logs
+          mountPath: # TODO: /var/log/containers
+          readOnly: # TODO: true
+      volumes:
+      - name: # TODO: logs
+        hostPath:
+          path: # TODO: /var/log/containers
+          type: # TODO: DirectoryOrCreate

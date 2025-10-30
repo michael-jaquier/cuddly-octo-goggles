@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: # TODO: deployment name
+spec:
+  replicas: # TODO: 3
+  strategy:
+    type: # TODO: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: # TODO: 1
+      maxSurge: # TODO: 1
+  selector:
+    matchLabels:
+      # TODO: selector labels
+  template:
+    metadata:
+      labels:
+        # TODO: pod labels
+    spec:
+      containers:
+      - name: hello
+        image: # TODO: ghcr.io/nginxdemos/hello:plain-text
+        ports:
+        - containerPort: 8080
+
+# To update:
+# kubectl set image deploy/api hello=ghcr.io/nginxdemos/hello:0.3-plain-text
+# kubectl rollout status deploy/api

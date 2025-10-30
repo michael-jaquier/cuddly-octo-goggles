@@ -1,0 +1,72 @@
+# Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: egress-test
+---
+# NetworkPolicy with egress rules
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: # TODO: policy name
+  namespace: egress-test
+spec:
+  podSelector:
+    matchLabels:
+      # TODO: select webapp pods
+  policyTypes:
+  - Egress
+  egress:
+  # Allow DNS
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+    - podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+  # Allow DB
+  - to:
+    - podSelector:
+        matchLabels:
+          # TODO: select db pods
+    ports:
+    - protocol: TCP
+      port: # TODO: 5432
+---
+# Database Pod
+apiVersion: v1
+kind: Pod
+metadata:
+  name: db
+  namespace: egress-test
+  labels:
+    app: db
+spec:
+  containers:
+  - name: postgres
+    image: postgres:16-alpine
+    env:
+    - name: POSTGRES_PASSWORD
+      value: testpass
+    ports:
+    - containerPort: 5432
+---
+# Web App Pod
+apiVersion: v1
+kind: Pod
+metadata:
+  name: webapp
+  namespace: egress-test
+  labels:
+    app: webapp
+spec:
+  containers:
+  - name: busybox
+    image: busybox:1.36
+    command: ['sh', '-c', 'sleep 3600']

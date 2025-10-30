@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: # TODO: ingress name
+spec:
+  ingressClassName: # TODO: nginx
+  rules:
+  - host: # TODO: web.example.com
+    http:
+      paths:
+      - path: # TODO: /
+        pathType: # TODO: Prefix
+        backend:
+          service:
+            name: # TODO: service name
+            port:
+              number: # TODO: service port

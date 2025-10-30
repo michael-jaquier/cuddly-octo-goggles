@@ -1,0 +1,33 @@
+# Deployment template
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: # TODO: deployment name
+spec:
+  replicas: # TODO: number of replicas
+  selector:
+    matchLabels:
+      # TODO: selector labels
+  template:
+    metadata:
+      labels:
+        # TODO: pod labels
+    spec:
+      containers:
+      - name: nginx
+        image: # TODO: nginx image with version
+        ports:
+        - containerPort: # TODO: container port
+---
+# Service template
+apiVersion: v1
+kind: Service
+metadata:
+  name: # TODO: service name
+spec:
+  type: # TODO: service type
+  selector:
+    # TODO: selector to match deployment pods
+  ports:
+  - port: # TODO: service port
+    targetPort: # TODO: target port on pods

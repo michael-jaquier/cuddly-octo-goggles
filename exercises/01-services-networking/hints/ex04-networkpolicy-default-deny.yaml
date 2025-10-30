@@ -1,0 +1,76 @@
+# Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: netpol
+---
+# Default deny all ingress
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: # TODO: policy name
+  namespace: netpol
+spec:
+  podSelector: {} # TODO: empty selector applies to all pods
+  policyTypes:
+  - # TODO: Ingress
+---
+# Allow frontend to backend on port 6379
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: # TODO: policy name
+  namespace: netpol
+spec:
+  podSelector:
+    matchLabels:
+      # TODO: select pods to protect (backend)
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          # TODO: select pods allowed to connect (frontend)
+    ports:
+    - protocol: # TODO: TCP
+      port: # TODO: 6379
+---
+# Test pods
+apiVersion: v1
+kind: Pod
+metadata:
+  name: backend
+  namespace: netpol
+  labels:
+    role: backend
+spec:
+  containers:
+  - name: redis
+    image: redis:7-alpine
+    ports:
+    - containerPort: 6379
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: frontend
+  namespace: netpol
+  labels:
+    role: frontend
+spec:
+  containers:
+  - name: busybox
+    image: busybox:1.36
+    command: ['sh', '-c', 'sleep 3600']
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: other
+  namespace: netpol
+spec:
+  containers:
+  - name: busybox
+    image: busybox:1.36
+    command: ['sh', '-c', 'sleep 3600']

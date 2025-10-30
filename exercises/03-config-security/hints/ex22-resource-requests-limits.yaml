@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resource-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resource-test
+  template:
+    metadata:
+      labels:
+        app: resource-test
+    spec:
+      containers:
+      - name: stress
+        image: # TODO: polinux/stress or nginx
+        resources:
+          requests:
+            cpu: # TODO: 50m
+            memory: # TODO: 64Mi
+          limits:
+            cpu: # TODO: 100m
+            memory: # TODO: 128Mi
+
+# To trigger OOMKill (if using stress image):
+# kubectl exec <pod> -- stress --vm 1 --vm-bytes 150M --vm-hang 1
+
+# After OOMKill, increase memory limit to 256Mi and reapply

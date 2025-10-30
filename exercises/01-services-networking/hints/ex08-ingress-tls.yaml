@@ -1,0 +1,28 @@
+# Create Secret with TLS cert/key
+# First run: openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+#   -keyout shop.key -out shop.crt -subj "/CN=shop.local/O=shop"
+# Then: kubectl create secret tls shop-tls --cert=shop.crt --key=shop.key
+
+---
+# Ingress with TLS
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: # TODO: ingress name
+spec:
+  ingressClassName: # TODO: nginx
+  tls:
+  - hosts:
+    - # TODO: shop.local
+    secretName: # TODO: shop-tls
+  rules:
+  - host: # TODO: shop.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: # TODO: shop-svc
+            port:
+              number: # TODO: 5678

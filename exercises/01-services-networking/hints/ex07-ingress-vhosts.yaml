@@ -1,0 +1,92 @@
+# Shop Deployment & Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shop
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: shop
+  template:
+    metadata:
+      labels:
+        app: shop
+    spec:
+      containers:
+      - name: http-echo
+        image: hashicorp/http-echo:1.0
+        args: ["-text=Shop"]
+        ports:
+        - containerPort: 5678
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shop-svc
+spec:
+  selector:
+    app: shop
+  ports:
+  - port: 5678
+---
+# Blog Deployment & Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blog
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: blog
+  template:
+    metadata:
+      labels:
+        app: blog
+    spec:
+      containers:
+      - name: http-echo
+        image: hashicorp/http-echo:1.0
+        args: ["-text=Blog"]
+        ports:
+        - containerPort: 5678
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: blog-svc
+spec:
+  selector:
+    app: blog
+  ports:
+  - port: 5678
+---
+# Ingress with multiple hosts
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: # TODO: ingress name
+spec:
+  ingressClassName: # TODO: nginx
+  rules:
+  - host: # TODO: shop.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: # TODO: shop-svc
+            port:
+              number: # TODO: 5678
+  - host: # TODO: blog.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: # TODO: blog-svc
+            port:
+              number: # TODO: 5678

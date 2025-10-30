@@ -1,0 +1,48 @@
+# ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: # TODO: configmap name
+data:
+  APP_COLOR: # TODO: blue
+  banner.txt: # TODO: |
+    # Welcome to CKAD!
+---
+# Deployment using ConfigMap
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: busybox
+        image: busybox:1.36
+        command: ["sh", "-c", "sleep 3600"]
+        env:
+        - name: # TODO: APP_COLOR
+          valueFrom:
+            configMapKeyRef:
+              name: # TODO: app-config
+              key: # TODO: APP_COLOR
+        volumeMounts:
+        - name: # TODO: config-volume
+          mountPath: # TODO: /etc/banner
+      volumes:
+      - name: # TODO: config-volume
+        configMap:
+          name: # TODO: app-config
+          items:
+          - key: # TODO: banner.txt
+            path: # TODO: banner.txt
+
+# Quick create command:
+# kubectl create configmap app-config --from-literal=APP_COLOR=blue --from-literal=banner.txt="Welcome to CKAD!"

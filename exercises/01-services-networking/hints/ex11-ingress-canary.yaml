@@ -1,0 +1,110 @@
+# Stable Deployment & Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-stable
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web
+      version: stable
+  template:
+    metadata:
+      labels:
+        app: web
+        version: stable
+    spec:
+      containers:
+      - name: http-echo
+        image: hashicorp/http-echo:1.0
+        args: ["-text=Stable"]
+        ports:
+        - containerPort: 5678
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-stable-svc
+spec:
+  selector:
+    app: web
+    version: stable
+  ports:
+  - port: 5678
+---
+# Canary Deployment & Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-canary
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web
+      version: canary
+  template:
+    metadata:
+      labels:
+        app: web
+        version: canary
+    spec:
+      containers:
+      - name: http-echo
+        image: hashicorp/http-echo:1.0
+        args: ["-text=Canary"]
+        ports:
+        - containerPort: 5678
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-canary-svc
+spec:
+  selector:
+    app: web
+    version: canary
+  ports:
+  - port: 5678
+---
+# Primary Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web-primary
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: web.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-stable-svc
+            port:
+              number: 5678
+---
+# Canary Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web-canary
+  annotations:
+    nginx.ingress.kubernetes.io/canary: # TODO: "true"
+    nginx.ingress.kubernetes.io/canary-weight: # TODO: "20"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: web.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: # TODO: web-canary-svc
+            port:
+              number: # TODO: 5678

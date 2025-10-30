@@ -1,0 +1,25 @@
+# custom-values.yaml
+replicaCount: # TODO: 3
+
+# Add custom environment variables
+# extraEnvVars:
+#   - name: CUSTOM_VAR
+#     value: "custom-value"
+
+# Set resource requests/limits
+resources:
+  requests:
+    cpu: # TODO: 100m
+    memory: # TODO: 128Mi
+  limits:
+    cpu: # TODO: 200m
+    memory: # TODO: 256Mi
+
+# To upgrade:
+# helm upgrade web bitnami/nginx -f custom-values.yaml
+
+# Check history:
+# helm history web
+
+# Verify changes:
+# kubectl get deploy -l app.kubernetes.io/instance=web -o yaml
