@@ -20,7 +20,7 @@ start:
 	@./setup.sh
 
 stop:
-	@./cleanup.sh
+	@./cleanup.sh --force
 
 restart: stop start
 

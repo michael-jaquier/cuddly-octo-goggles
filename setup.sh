@@ -11,13 +11,20 @@ echo ""
 # Check if cluster already exists
 if kind get clusters 2>/dev/null | grep -q "^${CLUSTER_NAME}$"; then
     echo "Cluster '${CLUSTER_NAME}' already exists."
-    read -p "Delete and recreate? (y/N): " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo "Deleting existing cluster..."
-        kind delete cluster --name "${CLUSTER_NAME}"
+
+    # Check if running interactively
+    if [ -t 0 ]; then
+        read -p "Delete and recreate? (y/N): " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            echo "Deleting existing cluster..."
+            kind delete cluster --name "${CLUSTER_NAME}"
+        else
+            echo "Aborting setup."
+            exit 0
+        fi
     else
-        echo "Aborting setup."
+        echo "Running non-interactively. Use 'make restart' to recreate cluster."
         exit 0
     fi
 fi
@@ -46,7 +53,6 @@ helm install ingress-nginx ingress-nginx/ingress-nginx \
     --set controller.service.type=NodePort \
     --set controller.service.nodePorts.http=30080 \
     --set controller.service.nodePorts.https=30443 \
-    --set controller.nodeSelector."ingress-ready"=true \
     --set controller.tolerations[0].key=node-role.kubernetes.io/control-plane \
     --set controller.tolerations[0].operator=Equal \
     --set controller.tolerations[0].effect=NoSchedule \
